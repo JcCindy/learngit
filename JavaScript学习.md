@@ -1514,61 +1514,703 @@ if(n < 0) {
 
 
 
+属性值简写：
+
 ~~~javascript
-let codes = {
-    "+49": "Germany",
-    "+41": "Switzerland",
-    "+44": "Great Britain",
-    "+1": "USA",
-};
-
-for( let code in codes) {
-    alert( +code );
+function makeUser(name, age) {
+    return {
+        name: name,
+        age: age,
+    };
 }
 
-let user = { name: "John" };
-Object.assign(user, { name: "Peter", isAdmin: true });
-for( let key in user ) {
-    alert( key );
-    alert( user[key] );
-}
+let user = makeUser("John", 30);
+alert( user.name );
 
-let user = { name: "John" };
-let p1 = { canView: true };
-let p2 = { canEdit: false };
-
-Object.assign(user, p1, p2);
-for( let m in user ) {
-    alert( m );
-    alert( user[m] );
-}
-
+//可以简写为
 let user = {
-    name: "John",
+    name, //与name: name相同
     age: 30,
 };
+~~~
 
-let clone = Object.assign({}, user);
 
-for( let n in clone ) {
-    alert( n );
-    alert( clone[n] );
+
+存在值检查：
+
+~~~javascript
+let user = {};
+alert( user.noSuchProperty === undefind ); //true 意思是没有这个属性
+~~~
+
+`in`来检查属性是否存在
+
+`"key" in object`
+
+~~~javascript
+let user = { name: "John", age: 30 };
+
+alert( "age" in user ); // true, user.age存在
+alert( "blabla" in user ); // false, user.blabla不存在
+
+//in的左边必须是属性名，通常是一个字符串，要么就是字符串变量
+let user = { age: 30 };
+
+let key = "age";
+alert( key in user );
+~~~
+
+"for...in"循环：
+
+为了使用对象的所有属性，可以利用`for...in`循环
+
+~~~javascript
+for(key in object) {
+    //各个属性值的执行区
+}
+
+//例如
+let user = {
+    name: "John",
+    age: 20,
+    isAdmin: true,
+};
+
+for(let key in user) {
+    //key是个可命名的普通变量
+    //keys
+    alert( ley );
+    //属性键的值
+    alert( user[key] );
 }
 ~~~
 
 
 
+复制和合并，Object.assign
+
+~~~javascript
+let user = {
+    name: "John",
+    age: 20,
+};
+
+let clone = {}; // 新的空对象
+
+// 复制所有的属性值
+for (let key in user) {
+    clone[key] = user[key];
+}
+
+// 现在复制是独立的复制了
+clone.name = "Peter"； //改变它的值
+alert( user.name ); //原对象属性值不变    
+
+//使用Object.assign来实现
+//语法是： Object.assign(dest[, src1, src2, src3...])
+//参数dest和srcN是对象
+//复制srcN所有对象到dest
+
+//例
+let user = { name: "John" };
+
+let p1 = { a1: true };
+let p2 = { a2: flase };
+
+//把p1,p2的所有属性拷贝给user
+Object.assign(user, p1, p2);
+
+//如果接受对象中已经有了同名的属性，前面的会被覆盖
+let user = { name: "John" };
+
+//覆盖
+Object.assign(user, { name："Peter", isAdmin: true });
+//现在 User = { name: "peter", isAdmin: true }
+~~~
+
+
+
+可以用Object.assign来代理简单的复制方法：
+
+~~~javascript
+let user = {
+    name : "John",
+    age: 30,
+};
+
+let clone = Object.assign({}, user);
+
+for (let key in clone) {
+    alert( key );
+    alert( clone[key] );
+}
+~~~
+
+==深拷贝，浅拷贝==
+
+深拷贝：Object.assign 或 _.cloneDeep(obj)
+
+总结：
+
+1. 获取属性：
+
+- 点号
+- 方括号：object["ooo ii"]，方括号中可用变量
+
+2. 删除属性：delete obj.prop
+3. 检查属性是否存在："key" in obj
+4. 遍历对象：for(let key in obj){ };
+
+
+
+Object-oriented programming
+
+在代码中用对象表示实体，就是面向对象的编程，简称"OOP"
+
+==例如 E.Gamma、R.Helm、R.Johnson 和 J.Vissides 所著的《设计模式：可复用面向对象软件的基础》、==
+
+==G.Booch 所著的《面向对象分析与设计》等等==
+
+
+
+函数：
+
+可简写为：`sayHi() {}`
+
+`this`的值就是在点之后的这个对象
+
+原始对象值转换：
+
+1. Symbol.toPrimitive
+
+```javascript
+obj[Symbol.toPrimitive] = function(hint) {
+    //返回一个原始值
+    // hint = "string", "number", "default"中的一个
+}
+```
+
+~~~javascript
+let user = {
+    name: "Cindy",
+    money: 1000,
+    
+    [Symbol.toPrimitive](hint) {
+        alert(`hint: ${ hint }`);
+        return hint == "string" ? `{name: "${ this.name }"}` : this.money;
+    }
+};
+
+alert(user);
+alert(+user);
+alert(user + 500);
+~~~
+
+toString/valueOf
+
+toPrimitive/toString/toNumber
+
+
+
+包装数据类型，原始数据类型
+
+
+
+1e3 = 1* 1000
+
+1.23e6 = 1.23 * 1000000
+
+1e-3 = 1 * -1000
+
+十六进制、二进制、八进制数字
+
+16:
+
+​	0xff: 255
+
+​	0xFF: 255
+
+2:
+
+​	ob11111111: 255
+
+8:
+
+​	0o377: 255
+
+```javascript
+let num = 255;
+alert( num.toString(16) ); // ff
+alert( num.toString(2) ); // 11111111
+```
+
+toString(base):
+
+num,toString(base)返回带有给定base的进制中num的字符串表示。base默认为10。
+
+- base = 16 用于十六进制颜色，字符编码等，数字可以是0..9, A..F
+- base = 2 主要用于调试按位操作，数字可以是0, 1
+- base = 36 是最大值，当需要将一个较长的数字标识符变成较短的时候，例如做一个简短的URL，可以简单地用基数为36的数字系统表示
+
+`alert( 123456..toString(36) );`
+
+四舍五入：
+
+- Math.floor(向下舍入)：3.1->3 , -1.1 -> -2
+- Math.ceil(向上舍入): 3.1 -> 4, -1.1 -> -1
+- Math.round(向最近的整数舍入): 3.1-> 3, 3.6 -> 4, -1.1 -> -1
+- Math.trunc(删除小数点之后的内容而不舍入): 3.1 -> 3, -1.1 -> -1
+
+在十进制后将数字保留到n位：
+
+1. 乘法和除法
+
+```javascript
+let num = 1.23456;
+alert( Math.floor(num * 100) / 100 ); 
+// 1.23456 -> 123.456 -> 123 -> 1.23 
+```
+
+2. 函数toFixed(n)，将点数后的数字四舍五入到n位，并返回结果的**字符串**表示
+
+```javascript
+//向上或向下舍入到最接近的值，类似于Math.round
+let num = 12.34;
+alert( num.toFixed(1) );
+//"12.3"
+let num = 12.36;
+alert( num.toFixed(1) );
+//"12.4"
+let num = 12.34;
+alert( num.toFixed(5) );
+//"12.34000"
+```
+
+*可以用一元加号或Number()将其转换为数字：+num.toFixed(5)*
+
+不精确计算：
+
+1. 小数转为整数
+
+   `alert( (0.1 * 10 + 0.2 * 10) / 10 ); // 0.3`
+
+2. toFixed(n)
+
+   ```javascript
+   let sum = 0.1 + 0.2;
+   alert( sum.toFixed(2) ); // "0.3"
+   alert( +sum.toFixed(2) ); // 用一元加号强制转换为数字
+   ```
+
+测试：isFinite和isNaN
+
+- Infinite(和-Infinite)是一个特殊的数组，比任何数值都大(小)
+
+- NaN代表一个错误
+
+- isNaN(value)将其参数转换为数字，然后测试它是否为NaN**NaN不等于任何东西包括它本身**
+
+  ```javascript
+  alert( isNaN(NaN) ); // true
+  alert( isNaN("str") ); // true
+  alert( NaN === NaN ); // false
+  ```
+
+- isFinite(value)将其参数转换为数字，如果是常规数字，则返回true，而不是NaN/ Infinity/ -Infinity
+
+  ```javascript
+  alert( isFinite("15") ); // true
+  alert( isFinite("str") ); // false, because a special value: NaN
+  alert( isFinite(Infinity) ); // false, because a special value: Infinity
+  
+  //有时isFinite用于验证字符串值是否为常规数字
+  let num = +prompt("Enter a number", '');
+  //结果会是true，除非输入无穷大，无穷大不是数字
+  alert( isFinite(num) );
+  ```
+
+  *注意：所有数字函数（包括isFinite）中的空字符串或空格字符串均被视为0*
+
+**Object.js进行比较**
+
+1. 适用于NaN：`Object.is(NaN, NaN) === true`
+2. `Object.is(0, -0) === false`
+3. 在所有其他情况下。`Object.is(a, b)`与`a === b`相同
+
+**parseInt 和 parseFloat**
+
+使用+或Number()的数字转换时严格的。如果一个值不完全是数字，就会失败：
+
+`alert( +"100px" ); // NaN`
+
+唯一的例外是字符串开头或结尾的空格。
+
+parseInt, parseFloat从字符串中“读取”一个数字。如果发生错误则返回收集的数据
+
+```javascript
+alert( parseInt('100px') ); //100
+alert( parseFloat('12.5em') ); // 12.5
+alert( parseInt('12.4') ); // 12
+alert( parseFloat(12.3.5) ); // 12.3
+alert( parseInt('a123') ); // NaN, the first symbol stops the process
+```
+
+parseInt()中有可选的第二个参数，可以指定数字系统的基础，因此parseInt还可以解析十六进制数字，二进制数字等字符串：
+
+```javascript
+alert( parseInt('0xff', 16) ); // 255
+alert( parseInt('ff', 16) ); // 255
+alert( parseInt('2n9c', 26) ); // 123456
+```
+
+**单引号字符串中需要转意符，用反引号，双引号则不用**
+
+数字属性：str.length
+
+访问字符串中的某一位：1.str[4], 2.str.charAt(4)
+
+```javascript
+//将首字母大写
+//ucFirst("john") == "John";
+
+//cap = str.slice(0, 1);
+//cap = cap.toUppercase();
+
+function ucFirst(str) {
+    str1 = str[0].toUpperCase();
+    str2 = str.slice(1);
+    alert(str1 + str2);
+}
+ucFirst("john");
+
+//改进版1
+let newStr = str[0].toUpperCase() + str.slice(1);
+
+//改进版2
+let newStr = str.charAt(0).toUppercase + str.slice(1);
+
+//改进版3
+function ucFirst(str) {
+    if (!str) return str;
+    
+    return str[0].toUpperCase() + str.slice(1);
+}
+alert( ucFirst("john") );
+```
+
+```javascript
+//checkSpam(str),str中包含viagra, XXX返回true，否则返回false
+//函数必须不区分大小写
+
+function checkSpam(str) {
+    str = str.toLowerCase();
+    if(str.includes("viagra") || str.includes("xxx")) {
+        return true;
+    } else {
+        return false;
+    }
+}
+alert(checkSpam("ddddddd"));
+```
+
+```javascript
+//truncate("What I'd like to tell on this topic //is: ", 20) = "What I'd like to te..."
+
+function truncate(str, maclength) {
+    if (str.length > maclength) {
+        str = str.slice(0, 20) + "..."
+        alert( str );
+    } else {
+        alert( str );
+    }
+}
+truncate("What I'd like to tell on this topic is: ", 20)
+```
+
+声明空数组：
+
+let arr = new Array("sdaf", "wefw", );**少见**
+
+let arr = ["dsd", "afew", ];**常用**
+
+队列：
+
+- push：在数组末尾添加一个元素
+- shift：取出队列最前端的一个元素，整个队列往前移。
+
+栈：
+
+- push：在末端添加一个元素
+- pop：从末端取出一个元素
+
+
+
+shift：取出数组的第一个元素并返回它
+
+unshift：在数组前端添加元素
+
+*push、pop快，而shift，unshift慢*
+
+*因为顺序结构的栈和队列尾部都可以直接找到，而找到头部需要一次遍历，所以速度慢*
+
+通过`for... of`来遍历数组，==不应该用`for..in
+
+清空数组：arr.length = 0;
+
+```javascript
+//最大子字符串和
+//只需遍历一遍，时间复杂度O(n)
+function getMaxSubSum(arr) {
+    let maxSum = 0;
+    let partialSum = 0;
+    
+    for(let item of arr) {
+        partialSum += item;
+        maxSum = Math.max(maxSum, partialSum);
+        if (partialSum < 0) {
+            partialSum = 0;
+        }
+    }
+    return maxSum;
+}
+```
+
+数组方法：
+
+- 添加、删除元素
+
+1. arr.push(...item)：从结尾添加元素
+
+2. arr.pop()：从结尾提取元素
+
+3. arr.shift()：从开头提取元素
+
+4. arr.unshift(...item)：从开头添加元素
+
+5. arr.splice(...)
+
+   arr.splice(1, 1); // 从1位置删除1个元素
+
+   arr.splice(0, 3, "aaa","bbb"); // 从0位置删除3个元素，并用另外两个元素替换它们
+
+   remove = arr.splice(0, 2); alert(remove) // 保存被删除的元素
+
+   arr.splice(2, 0, "aaa", "bbb"); // 在2位置添加两个元素
+
+6. arr.slice(start, end); //取出数组中从start到包含end的部分
+
+7. arr.concat(arg1, arg2); // 将两个数组合并起来
+
+- 查询元素
+
+1. arr.indexOf(item); // 从索引from查询item，如果找到返回索引，否则返回-1
+2. arr.lastIndexOf(item, from); // 同上，只不过从末尾开始寻找
+3. arr.includes(item, from); // 从索引from查询item，如果找到则返回true
+4. arr.find(); // 找到某元素
+5. arr.findIndex(); // 找到某需要元素的索引
+6. arr.filter(); // 返回所有匹配元素组成的数组
+
+- 转换数组
+
+1. map(func) 从每个元素调用func的结果创建一个新数组
+2. sort(func) 将数组倒序排列然后返回
+3. reverse() 在原地颠倒数组，然后返回
+4. split/join 将字符串转换为数组并返回
+5. reduce(func, initial) 通过为每个元素调用func计算数组上的单个值并在调用之间传递中间结果
+
+- 迭代元素
+
+1. forEach(func) 为每个元素调用func，不返回任何东西
+
+- 其他
+
+1. Array.isArray(arr) 检查arr是否是一个数组
+
+*sort, reverse, splice方法修改数组本身*
+
+
+
+Iterables 可迭代的
+
+可以应用for..of的对象被称为可迭代的
+
+- 可迭代对象必须实现方法Symbol.iterator
+- obj[Symbol.iterator]的结果被称为迭代器，由它处理更深入的迭代过程
+- 一个迭代器必须有next()方法，它返回一个{ done: Boolean, value: any }，这里done:true表明迭代接收，否则value就是下一个值
+- Symbol.iterator方法会被for..of自动调用，但也可以直接调用
+- 内置的可迭代对象例如**字符串和数组**，都实现了Symbol.iterator
+- 字符串迭代器能够识别UTF-16扩展字符
+- 有索引属性和length属性的对象被称为类数组对象，这种对象没有数组的内建方法
+
+Array.from实现数组去重合并
+
+结构赋值
+
+- 结构赋值允许将对象或数组立即映射到多个变量上
+- 结构对象的语法：
+
+`let {prop: varName = default, ...} = object`
+
+表示属性prop会被赋值给变量varName，如果没有这个属性的话，就会使用default的值
+
+- 结构数组的语法：
+
+`let [item1 = default, item2, ...rest] = array`
+
+数组的第一个元素赋值给item1，第二个元素赋值给item2，剩下的所有组成另一个数组rest
+
+**JSON**
+
+1. JSON.stringify将对象转换成JSON
+2. JSON.parse将JSON转换成对象
+
+JSON编码的对象与对象字面量的区别：
+
+- 字符串使用双引号
+- 对象属性名称也是双引号
+
+
+
+```javascript
+let room = {
+    number: 23;
+};
+
+let meetup = {
+    title: "confernce",
+    participants: [{name: "John"}, {name: "Alice"}],
+    place: room,
+};
+
+room.occupiedBy = meetup;
+
+alert( JSON.stringify(meetup, ['title', 'participants', 'place', 'name', 'number']) );
+```
+
+```javascript
+let room = {
+    number: 23;
+};
+
+let meetup = {
+    title: "conference",
+    participants: [{name: 'John'}, {name: 'Alice'}],
+    place: room
+};
+
+room.occupiedBy = meetup;
+
+alert( JSON.stringify(meetup, function replacer(key, value) {
+    alert(`${key}: ${value}`);
+    return (key == 'occunpiedBy') ? undefined : value;
+}));
+```
+
+```javascript
+let user = {
+    name: "John",
+    age: 25,
+    roles: {
+        isAdmin: false,
+        isEditor: true,
+    }
+};
+
+alert(JSON.stringify(user, null, 2));
+```
 
 
 
 
 
+==疑惑的地方：==
+
+==Symbol，迭代器==
+
+```javascript
+let range = {
+    form: 1,
+    to: 5,
+};
+
+range[Symbol.iterator] = function() {
+    return {
+        current: this.form,
+        last: this.to,
+        
+        next() {
+            if (this.current <= this.lasr) {
+                return {
+                    done: false, value: this.current++
+                };
+            } else{
+                return { done: true };
+            }
+        }
+    };
+};
+
+for (let num of range) {
+    alert( num );
+}
+
+// 显示调用迭代器
+let str = "Hello";
+
+// 和下面代码的功能完全一致
+// for (let char of str) alert(char);
+
+let iterator = str[Symbol.iterator]();
+
+while (true) {
+    let result = iterator.next();
+    if (result.done) break;
+    alert(result.value);
+}
+```
 
 
 
+```javascript
+let student = {
+    name: "John",
+    age: 30,
+    isAdmin: false,
+    course: ['html', 'css', 'js'],
+    wife: null,
+};
+let json = JSON.stringify( student );
+
+alert(typeof json);
+
+alert( json );
+```
+
+##vue双向绑定原理##
+
+vue特性：非侵入式响应系统
+
+vue实现双向绑定：**数据劫持**结合**发布者-订阅者模式**的方式来实现的
+
+数据劫持：vue通过Object.defineProperty()来实现数据劫持，其中会有getter(),setter()方法，当读取属性值时，就会触发getter()方法，在view中如果数据发生了变化，就会通过Object.definedProperty()对属性设置一个setter函数，数据改变了就会触发这个函数
+
+step1.实现一个监听者Oberver来劫持并监听所有的属性，一旦有变化就通知订阅者
+
+step2.实现一个订阅者watcher来接收属性变化的通知并执行相应的方法，从而更新视图
+
+step3.实现一个解析器complie，可以扫描和解析每个节点的相关指令，并根据初始化模板数据以及初始化相对应的订阅者
 
 
 
+单项绑定：
+
+数据绑定到DOM上即：Model绑定到View
+
+双向绑定：
+
+Model绑定到View的基础上，View绑定到Model，即更新表单中肉眼可见的部分，Model也发生变化
+
+**双向绑定的好处是我们不需要用jQuery去查询表单状态，而是直接获得了用JavaScript对象表示的Model**
 
 
 
